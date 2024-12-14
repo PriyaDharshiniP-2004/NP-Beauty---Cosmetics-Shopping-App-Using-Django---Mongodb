@@ -1,0 +1,248 @@
+{% extends "app/base.html" %}
+{% load static %}
+{% block title %}Product Details{% endblock title %}
+
+{% block main-content %}
+<style>
+    /* Base CSS for Review System */
+.section-heading h3 {
+font-size: 1.8em;
+margin-bottom: 20px;
+color: #333;
+}
+
+form h5 {
+font-size: 1.5em;
+color: #444;
+margin-bottom: 10px;
+}
+
+.rate {
+display: flex;
+gap: 5px;
+margin-bottom: 10px;
+}
+
+.rate input[type="radio"] {
+display: none;
+}
+
+.rate label {
+font-size: 1.5em;
+color: #ddd;
+cursor: pointer;
+transition: color 0.2s ease;
+}
+
+.rate input[type="radio"]:checked ~ label {
+color: #ffcc00;
+}
+
+form .form-control {
+margin-bottom: 10px;
+border-radius: 5px;
+border: 1px solid #ddd;
+}
+
+form input[type="submit"].btn-primary {
+background-color: #5cb85c;
+border: none;
+color: #fff;
+padding: 10px 20px;
+border-radius: 5px;
+font-weight: bold;
+}
+
+form input[type="submit"].btn-primary:hover {
+background-color: #4cae4c;
+}
+
+article.box {
+background: #f9f9f9;
+padding: 20px;
+border-radius: 8px;
+margin-top: 20px;
+box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+article.box .icontext img {
+width: 50px;
+height: 50px;
+object-fit: cover;
+margin-right: 15px;
+}
+
+article.box .icontext h6 {
+font-size: 1.1em;
+color: #333;
+margin-bottom: 5px;
+}
+
+article.box .text-muted {
+font-size: 0.9em;
+color: #aaa;
+}
+
+article.box .mt-3 p {
+font-size: 1em;
+color: #555;
+line-height: 1.6;
+}
+
+/* Star Rating CSS */
+.rate {
+display: flex;
+flex-direction: row-reverse; /* Show highest rating on the left */
+gap: 5px;
+justify-content:left;
+}
+
+.rate input[type="radio"] {
+display: none; /* Hide radio buttons */
+justify-content: left;
+}
+
+.rate label {
+font-size: 2em; /* Adjust star size */
+color: #ddd; /* Default star color */
+cursor: pointer;
+transition: color 0.3s ease;
+}
+
+/* Change color on hover */
+.rate label:hover,
+.rate label:hover ~ label {
+color: #ffc107; /* Hover color */
+}
+
+/* Change color for checked stars */
+.rate input[type="radio"]:checked ~ label {
+color: #ffc107;
+}
+
+
+
+
+
+</style>
+    <div class="container">
+        <div class="row flex justify-content-between">
+            <div class="img2 col-lg-5 mt-5">
+                <img src="{{product.product_image.url}}" class="image col-xs-6 col-sm-12 col-lg-12 mt-3 text-sm-center w-100 h-75" alt="">
+            </div>
+
+
+            <div class="productdetail col-lg-5">              
+                <h1 style="font-family: Georgia; font-size: 50px;">{{product.title}}</h1>
+                <h5>Rs.{{product.discounted_price}}/-</h5>
+                <small class="text-decoration-line-through text-muted fs-5"><del>Rs. {{product.selling_price}}/- </small></del>
+                <br><br><h4>Product Description</h4>
+                <ul class="fs-5" style="font-family: Rajdhani;">
+                    <li>{{product.description}}</li>
+                </ul>
+
+                <br><h4>Product composition</h4>
+                <ul class="fs-5" style="font-family: Rajdhani;">
+                    <li>{{product.composition}}</li>
+                </ul>
+
+                <br><h4>Product Features</h4>
+                <ul class="fs-5" style="font-family: Rajdhani;">
+                    <li>{{product.key_features}}</li>
+                </ul>
+                
+                <form action="/add-to-cart" class="d-inline">
+                    <input type="hidden" name="prod_id" value={{product.id}}/>
+                    <button type="submit" class="btn btn-primary shadow px-5 py-2">Add to Cart</button>
+                </form>
+
+                <a href="{% url 'showcart' %}" class="btn btn-warning shadow px-5 py-2 ms-4">Buy Now</a>
+                  
+                {% if wishlist %}
+
+                <a pid={{product.id}} class="minus-wishlist btn btn-danger shadow px-5 py-2 ms-4"><i class="fas fa-heart fa-lg"></i></a>
+
+                {% else %}
+
+                <a pid={{product.id}} class="plus-wishlist btn btn-success shadow px-5 py-2 ms-4"><i class="fas fa-heart fa-lg"></i></a>
+
+                {% endif %}
+
+
+                
+            </div>
+        </div>
+         <br>
+        <div class="row">
+            <div class="col-md-9">
+                    
+                <form action="{% url 'submit_review' product.id%}" method="PoST">
+                    {% csrf_token %}
+                    <h5>Write Your Review</h5>
+                    
+                    <div>
+
+                        <label>How do you rate this product?</label>
+                    <br>
+                    <div class="rate">
+                        <input type="radio" name="rating" id="rating5" value="5" required />
+                        <label for="rating5">&#9733;</label>
+                    
+                        <input type="radio" name="rating" id="rating4" value="4" required />
+                        <label for="rating4">&#9733;</label>
+                    
+                        <input type="radio" name="rating" id="rating3" value="3" required />
+                        <label for="rating3">&#9733;</label>
+                    
+                        <input type="radio" name="rating" id="rating2" value="2" required />
+                        <label for="rating2">&#9733;</label>
+                    
+                        <input type="radio" name="rating" id="rating1" value="1" required />
+                        <label for="rating1">&#9733;</label>
+                    </div>
+                    
+                    {% comment %} Review Title:
+                    <input type="text" class="form-control" name="subject">
+                    <br> {% endcomment %}
+                    Review:
+                    <textarea name="review" rows="4" class="form-control"></textarea>
+                    <br>
+                    
+                    <input type="submit" value="Submit Review" class="btn btn-primary">
+                    
+                </div>
+                
+            </form>
+            <br>
+            <header class="section-heading">
+                <h3>Customer Reviews </h3>
+            </header>
+
+            {% for detail in review%}
+            <article class="box mb-3">
+                <div class="icontext w-100">
+                    
+                    <div class="text"></div>
+                    <img src="{% static 'app/images/plogo.png' %}" class="img-xs icon rounded-circle">
+                        <h6 class="mb-1">{{detail.user}}</h6>
+                        <span class="date-text-muted-float-md-right">{{detail.updated_at }}</span>
+                        
+                    </div>
+                    <div class="mt-3">
+                        <h4>{{detail.subject}}</h4>
+                        <p>{{detail.review }}</p>
+                        <h6>{{detail.rating}} star rating</h6>
+                    </div>
+                </div>
+                <br><br><br><br><br>
+            </article>
+            
+            {%endfor%}
+
+</div>
+
+{% endblock main-content %}
+
+
+
+  
